@@ -1,0 +1,3 @@
+A simple program to verify http & img link in markdown file(s)
+
+I'm building...
