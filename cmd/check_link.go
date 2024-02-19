@@ -1,15 +1,10 @@
-/*
-Copyright © 2024 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
-	"bufio"
 	"fmt"
 	"net/http"
 	"os"
-	"regexp"
-	"strings"
+	"sync"
 
 	"github.com/spf13/cobra"
 )
@@ -19,58 +14,31 @@ var linkCmd = &cobra.Command{
 	Use:   "link",
 	Short: "Check web link(s) in your markdown file(s)",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		fichiers, err := os.ReadDir(path)
+		files, err := os.ReadDir(path)
 		if err != nil {
 			return err
 		}
 
-		var nomsFichiers []string
-
-		for _, fichier := range fichiers {
-			if !fichier.IsDir() && strings.HasSuffix(strings.ToLower(fichier.Name()), ".md") {
-				nomsFichiers = append(nomsFichiers, fichier.Name())
-			}
+		webLinks, err := getLinks(files, regexLink)
+		if err != nil {
+			return err
 		}
-		fmt.Print(nomsFichiers)
 
-		var liens []string
+		var wg sync.WaitGroup
+		results := make(chan string)
 
-		for _, fichier := range nomsFichiers {
-
-			f, err := os.Open(path + "/" + fichier)
-			if err != nil {
-				return err
-			}
-			defer f.Close()
-
-			// Créer une expression régulière pour extraire les liens
-			regex := regexp.MustCompile(`\[(.*?)\]\((https?://[^\s\)]+)\)`)
-
-			// Lire le fichier ligne par ligne
-			scanner := bufio.NewScanner(f)
-			for scanner.Scan() {
-				ligne := scanner.Text()
-
-				// Trouver tous les liens dans la ligne
-				resultats := regex.FindAllStringSubmatch(ligne, -1)
-				for _, resultat := range resultats {
-					// Le lien est le deuxième groupe capturé
-					lien := resultat[2]
-					liens = append(liens, lien)
-				}
-			}
-
-			if err := scanner.Err(); err != nil {
-				return err
-			}
-
+		for _, link := range webLinks {
+			wg.Add(1)
+			go checkWebLinks(link, results, &wg)
 		}
-		for _, lien := range liens {
-			// Effectuer une requête HTTP GET pour vérifier le lien
-			_, err := http.Get(lien)
-			if err != nil {
-				fmt.Printf("Erreur en vérifiant le lien %s: %s\n", lien, err)
-			}
+
+		go func() {
+			wg.Wait()
+			close(results)
+		}()
+
+		for i := 0; i < len(webLinks); i++ {
+			fmt.Print(<-results)
 		}
 		return nil
 	},
@@ -78,4 +46,12 @@ var linkCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(linkCmd)
+}
+
+func checkWebLinks(link string, results chan<- string, wg *sync.WaitGroup) {
+	defer wg.Done()
+	_, err := http.Get(link)
+	if err != nil {
+		results <- fmt.Sprintf("Error checking link %s: %s\n", link, err)
+	}
 }

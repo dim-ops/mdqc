@@ -1,15 +1,10 @@
-/*
-Copyright © 2024 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
-	"bufio"
 	"fmt"
 	"os"
 	"path/filepath"
-	"regexp"
-	"strings"
+	"sync"
 
 	"github.com/spf13/cobra"
 )
@@ -19,59 +14,31 @@ var imgCmd = &cobra.Command{
 	Use:   "img",
 	Short: "Check images link(s) in your markdown file(s)",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		fichiers, err := os.ReadDir(path)
+		files, err := os.ReadDir(path)
 		if err != nil {
 			return err
 		}
 
-		var nomsFichiers []string
-
-		for _, fichier := range fichiers {
-			if !fichier.IsDir() && strings.HasSuffix(strings.ToLower(fichier.Name()), ".md") {
-				nomsFichiers = append(nomsFichiers, fichier.Name())
-			}
+		imgLinks, err := getLinks(files, regexImg)
+		if err != nil {
+			return err
 		}
-		fmt.Print(nomsFichiers)
 
-		var liens []string
+		var wg sync.WaitGroup
+		results := make(chan string)
 
-		for _, fichier := range nomsFichiers {
-
-			f, err := os.Open(path + "/" + fichier)
-			if err != nil {
-				return err
-			}
-			defer f.Close()
-			fmt.Print(nomsFichiers)
-
-			// Créer une expression régulière pour extraire les liens
-			regex := regexp.MustCompile(`!\[(.*?)\]\(([^)]+)\)`)
-
-			// Lire le fichier ligne par ligne
-			scanner := bufio.NewScanner(f)
-			for scanner.Scan() {
-				ligne := scanner.Text()
-
-				// Trouver tous les liens dans la ligne
-				resultats := regex.FindAllStringSubmatch(ligne, -1)
-				for _, resultat := range resultats {
-					// Le lien est le deuxième groupe capturé
-					lien := resultat[2]
-					liens = append(liens, lien)
-					fmt.Println(liens)
-				}
-			}
-
-			if err := scanner.Err(); err != nil {
-				return err
-			}
-
+		for _, link := range imgLinks {
+			wg.Add(1)
+			go checkImgLinks(link, results, &wg)
 		}
-		for _, lien := range liens {
-			cheminImage := filepath.Join(imgPath, lien)
-			if _, err := os.Stat(cheminImage); os.IsNotExist(err) {
-				return fmt.Errorf("Le fichier d'image %s référencé dans le fichier Markdown %s n'existe pas dans le répertoire des images %s", lien, path, imgPath)
-			}
+
+		go func() {
+			wg.Wait()
+			close(results)
+		}()
+
+		for i := 0; i < len(imgLinks); i++ {
+			fmt.Print(<-results)
 		}
 		return nil
 	},
@@ -79,4 +46,12 @@ var imgCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(imgCmd)
+}
+
+func checkImgLinks(link string, results chan<- string, wg *sync.WaitGroup) {
+	defer wg.Done()
+	cheminImage := filepath.Join(imgPath, link)
+	if _, err := os.Stat(cheminImage); os.IsNotExist(err) {
+		results <- fmt.Sprintf("Error checking link %s: %s\n", link, err)
+	}
 }
