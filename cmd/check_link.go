@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/dim-ops/mdqc/internal/check"
 	"github.com/spf13/cobra"
 )
@@ -15,7 +13,7 @@ var linkCmd = &cobra.Command{
 
 		err := check.CheckWebLinks(path)
 		if err != nil {
-			return fmt.Errorf("Impossible to check web link(s) in %s: %w", path, err)
+			return err
 		}
 
 		return nil

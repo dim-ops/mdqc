@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/dim-ops/mdqc/internal/compress"
 	"github.com/spf13/cobra"
 )
@@ -15,7 +13,7 @@ var compressImg = &cobra.Command{
 
 		err := compress.CompressImg(path)
 		if err != nil {
-			return fmt.Errorf("Impossible to crompress image(s) in %s: %w", path, err)
+			return err
 		}
 		return nil
 	},

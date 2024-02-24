@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/dim-ops/mdqc/internal/check"
 	"github.com/spf13/cobra"
 )
@@ -15,7 +13,7 @@ var imgCmd = &cobra.Command{
 
 		err := check.CheckImgLinks(path, imgPath)
 		if err != nil {
-			return fmt.Errorf("impossible to check img link(s) in %s: %w", path, err)
+			return err
 		}
 
 		return nil
