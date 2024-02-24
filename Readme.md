@@ -1,7 +1,5 @@
 # Markdown Quality Checker
 
-![GitHub](https://img.shields.io/github/license/dim-ops/mdqc)
-
 The Markdown Quality Checker is a lightweight tool designed to check the quality of your Markdown files. It offers several useful features to help you maintain the quality of your Markdown documents.
 
 ## Features
@@ -20,7 +18,7 @@ The Markdown Quality Checker is a lightweight tool designed to check the quality
 To install the Markdown Quality Checker, you need to have Go installed on your system. Once Go is installed, you can use the following command:
 
 ```bash
-go install github.com/dim-ops/markdown-quality-checker
+go install github.com/dim-ops/mdqc
 ```
 
 ## Usage
@@ -46,7 +44,3 @@ Contributions are welcome! If you have any ideas to improve the Markdown Quality
 ## License
 
 This project is licensed under the [Apache License](LICENSE).
-
----
-
-Make sure to customize this README by replacing "dim-ops" with your GitHub username and adding any other specific details about your project.
