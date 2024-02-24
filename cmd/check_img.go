@@ -12,16 +12,17 @@ import (
 // linkCmd represents the link command
 var imgCmd = &cobra.Command{
 	Use:   "img",
-	Short: "Check images link(s) in your markdown file(s)",
+	Short: "Checks images link(s) in your markdown file(s)",
+	Long:  `Checks that the links to your images in your markdown files work.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		files, err := os.ReadDir(path)
+		files, err := getFiles()
 		if err != nil {
-			return err
+			return fmt.Errorf("impossible to get file(s): %w", err)
 		}
 
 		imgLinks, err := getLinks(files, regexImg)
 		if err != nil {
-			return err
+			return fmt.Errorf("impossible to get image(s) link(s): %w", err)
 		}
 
 		var wg sync.WaitGroup

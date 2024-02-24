@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"net/http"
-	"os"
 	"sync"
 
 	"github.com/spf13/cobra"
@@ -12,23 +11,26 @@ import (
 // linkCmd represents the link command
 var linkCmd = &cobra.Command{
 	Use:   "link",
-	Short: "Check web link(s) in your markdown file(s)",
+	Short: "Checks web link(s) in your markdown file(s)",
+	Long:  `Checks that the links to web sites in your markdown files work.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		files, err := os.ReadDir(path)
+		files, err := getFiles()
 		if err != nil {
-			return err
+			return fmt.Errorf("impossible to get image(s) link(s): %w", err)
 		}
 
 		webLinks, err := getLinks(files, regexLink)
 		if err != nil {
-			return err
+			return fmt.Errorf("impossible to get web link(s): %w", err)
 		}
 
+		fmt.Println(webLinks)
 		var wg sync.WaitGroup
 		results := make(chan string)
 
 		for _, link := range webLinks {
 			wg.Add(1)
+			fmt.Println(link)
 			go checkWebLinks(link, results, &wg)
 		}
 
