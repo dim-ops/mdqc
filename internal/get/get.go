@@ -1,4 +1,4 @@
-package cmd
+package get
 
 import (
 	"bufio"
@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func getFiles() (files []string, err error) {
+func GetFiles(path string) (files []string, err error) {
 	err = filepath.WalkDir(path, func(path string, d fs.DirEntry, err error) error {
 		if isValidExtension(path) {
 			files = append(files, path)
@@ -23,9 +23,8 @@ func getFiles() (files []string, err error) {
 	return files, nil
 }
 
-func getLinks(files []string, regex *regexp.Regexp) (webLinks []string, err error) {
+func GetLinks(files []string, regex *regexp.Regexp) (webLinks []string, err error) {
 
-	fmt.Println(files)
 	for _, file := range files {
 		f, err := os.Open(file)
 		if err != nil {
