@@ -8,7 +8,7 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "cmk",
+	Use:   "mdqc",
 	Short: "A simple program to check your markdown file(s)",
 	Long:  "This program checks that the links to your images and web work well, other features are in development",
 }
