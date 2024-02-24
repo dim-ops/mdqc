@@ -1,4 +1,4 @@
-module github.com/dim-ops/check-markdown
+module github.com/dim-ops/mdqc
 
 go 1.22
 
