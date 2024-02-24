@@ -6,9 +6,11 @@ import (
 )
 
 var compressImg = &cobra.Command{
-	Use:   "compress",
-	Short: "Compress your img(s)",
-	Long:  `Compress your img(s) to improve their size and SEO`,
+	Use:           "compress",
+	Short:         "Compress your img(s)",
+	Long:          `Compress your img(s) to improve their size and SEO`,
+	SilenceUsage:  true,
+	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 
 		err := compress.CompressImg(path)
