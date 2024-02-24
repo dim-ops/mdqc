@@ -21,8 +21,6 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.PersistentFlags().StringVarP(&imgPath, "imgPath", "i", "", "path to image(s)")
-	rootCmd.MarkPersistentFlagRequired("imgPath")
 	rootCmd.PersistentFlags().StringVarP(&path, "path", "p", "", "path to target file(s)")
 	rootCmd.MarkPersistentFlagRequired("path")
 }

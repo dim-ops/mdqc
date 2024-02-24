@@ -46,6 +46,9 @@ var imgCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(imgCmd)
+
+	imgCmd.PersistentFlags().StringVarP(&imgPath, "imgPath", "i", "", "path to image(s)")
+	imgCmd.MarkPersistentFlagRequired("imgPath")
 }
 
 func checkImgLinks(link string, results chan<- string, wg *sync.WaitGroup) {
