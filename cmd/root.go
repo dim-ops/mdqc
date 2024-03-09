@@ -20,6 +20,7 @@ func Execute() {
 	}
 }
 
+//nolint:errcheck
 func init() {
 	rootCmd.PersistentFlags().StringVarP(&path, "path", "p", "", "path to target file(s)")
 	rootCmd.MarkPersistentFlagRequired("path")
