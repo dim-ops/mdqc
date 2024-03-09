@@ -9,11 +9,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/dim-ops/mdqc/internal/get"
+	"github.com/dim-ops/mdqc/internal/mdextract"
 )
 
 func CompressImg(path string) error {
-	files, err := get.GetFiles(path)
+	files, err := mdextract.GetFiles(path)
 	if err != nil {
 		return fmt.Errorf("impossible to get image(s) link(s): %w", err)
 	}
@@ -30,7 +30,6 @@ func CompressImg(path string) error {
 			return fmt.Errorf("impossible to read file %s: %w", file, err)
 		}
 
-		// Créer le fichier de sortie
 		outputFile, err := os.Create(file)
 		if err != nil {
 			return fmt.Errorf("impossible to create file %s: %w", file, err)

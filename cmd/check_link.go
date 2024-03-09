@@ -6,9 +6,11 @@ import (
 )
 
 var linkCmd = &cobra.Command{
-	Use:   "link",
-	Short: "Checks web link(s) in your markdown file(s)",
-	Long:  `Checks that the links to web sites in your markdown files work.`,
+	Use:           "link",
+	Short:         "Checks web link(s) in your markdown file(s)",
+	Long:          `Checks that the links to web sites in your markdown files work.`,
+	SilenceUsage:  true,
+	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 
 		err := check.CheckWebLinks(path)

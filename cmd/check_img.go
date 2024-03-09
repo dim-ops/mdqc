@@ -6,9 +6,11 @@ import (
 )
 
 var imgCmd = &cobra.Command{
-	Use:   "img",
-	Short: "Checks images link(s) in your markdown file(s)",
-	Long:  `Checks that the links to your images in your markdown files work.`,
+	Use:           "img",
+	Short:         "Checks images link(s) in your markdown file(s)",
+	Long:          `Checks that the links to your images in your markdown files work.`,
+	SilenceUsage:  true,
+	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 
 		err := check.CheckImgLinks(path, imgPath)
