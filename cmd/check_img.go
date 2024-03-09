@@ -22,6 +22,7 @@ var imgCmd = &cobra.Command{
 	},
 }
 
+//nolint:errcheck
 func init() {
 	rootCmd.AddCommand(imgCmd)
 
